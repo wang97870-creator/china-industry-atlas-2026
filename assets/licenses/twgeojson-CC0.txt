@@ -1,0 +1,15 @@
+twgeojson — geojson data for Taiwan
+https://github.com/g0v/twgeojson
+
+The upstream project states:
+
+"To the extent possible under law, Chia-liang Kao has waived all copyright
+and related or neighboring rights to twgeojson. This work is published from
+Taiwan."
+
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+This project uses the county-level GeoJSON, normalizes display names to match
+the atlas city index, and excludes Kinmen and Lienchiang because they are not
+present in the atlas's current 20-city Taiwan index.

@@ -7,7 +7,7 @@
     <meta name="color-scheme" content="dark" />
     <meta
       name="description"
-      content="一页浏览中国重点城市的产业定位、经济指标、产业链证据与代表企业。覆盖 34 个省级地区、365 个城市索引、16 条产业链与 170 条企业记录。"
+      content="一页浏览中国城市的产业定位、经济指标、产业链证据与代表企业。覆盖 34 个省级地区、365 个城市画像、16 条产业链与 1,758 条企业记录。"
     />
     <meta property="og:title" content="中国城市产业与龙头企业深度图谱 2026" />
     <meta
@@ -18,11 +18,13 @@
     <title>中国城市产业与龙头企业深度图谱 2026</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="assets/styles.css" />
-    <script
-      src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"
-      defer
-    ></script>
+    <script src="assets/vendor/echarts-5.5.1.min.js" defer></script>
     <script src="assets/data.js" defer></script>
+    <script src="assets/generated/a-share-enterprises.js" defer></script>
+    <script src="assets/generated/neeq-enterprises.js" defer></script>
+    <script src="assets/generated/twse-enterprises.js" defer></script>
+    <script src="assets/generated/curated-city-enterprises.js" defer></script>
+    <script src="assets/generated/city-profiles.js" defer></script>
     <script src="assets/app.js" defer></script>
   </head>
   <body>
@@ -40,6 +42,7 @@
       <div class="topbarMeta">
         <span class="editionPill"><i></i> City Due Diligence</span>
         <nav class="nav" aria-label="页面导航">
+          <a href="#useCases">用途</a>
           <a href="#atlas">工作台</a>
           <a href="#taxonomy">产业框架</a>
           <a href="#trends">趋势</a>
@@ -95,9 +98,9 @@
             </article>
             <article class="stat">
               <span class="statIndex">03</span>
-              <b id="enterpriseCountStat">170</b>
+              <b id="enterpriseCountStat">1,758</b>
               <span>代表企业记录</span>
-              <em id="enterpriseCityCoverage">29 个重点城市</em>
+              <em id="enterpriseCityCoverage">365 个城市全覆盖</em>
             </article>
             <article class="stat">
               <span class="statIndex">04</span>
@@ -105,6 +108,66 @@
               <span>细分产业链</span>
               <em>96 个价值链节点</em>
             </article>
+          </div>
+        </section>
+
+        <section class="useCaseHub" id="useCases" aria-labelledby="useCaseTitle">
+          <div class="useCaseHead">
+            <div>
+              <span class="sectionEyebrow">CHOOSE YOUR WORKFLOW</span>
+              <h2 id="useCaseTitle">你想用这张图谱解决什么问题？</h2>
+              <p>按用途进入同一个研究工作台。每张卡片会直接打开对应地图、城市、企业、产业链或证据视图。</p>
+            </div>
+            <div class="useCaseFilters" aria-label="用途分类筛选">
+              <button class="active" data-use-filter="all" type="button">全部</button>
+              <button data-use-filter="research" type="button">城市研究</button>
+              <button data-use-filter="data" type="button">企业与产业</button>
+              <button data-use-filter="decision" type="button">比较与核验</button>
+            </div>
+          </div>
+          <div class="useCaseGrid">
+            <button class="useCaseCard useCaseFeatured" data-use-case="city-overview" data-use-category="research" type="button">
+              <span class="useCaseTop"><i>01</i><em>城市研究</em></span>
+              <strong>城市产业尽调</strong>
+              <p>看城市定位、关键指标、六大重点产业、代表企业和省域背景。</p>
+              <span class="useCaseMeta"><b>365</b> 城市画像 · 默认打开南通</span>
+              <span class="useCaseAction">进入城市画像 <i>→</i></span>
+            </button>
+            <button class="useCaseCard" data-use-case="enterprise-library" data-use-category="data" type="button">
+              <span class="useCaseTop"><i>02</i><em>企业数据</em></span>
+              <strong>龙头与代表企业库</strong>
+              <p>按企业名、业务、代码、产业和上市状态筛选，查看来源与产业链位置。</p>
+              <span class="useCaseMeta"><b id="useCaseEnterpriseCount">1,758</b> 条记录 · 逐城有样本</span>
+              <span class="useCaseAction">打开企业库 <i>→</i></span>
+            </button>
+            <button class="useCaseCard" data-use-case="industry-chain" data-use-category="data" type="button">
+              <span class="useCaseTop"><i>03</i><em>产业链</em></span>
+              <strong>产业链定位</strong>
+              <p>从上游材料与部件，到中游制造集成，再到下游场景与服务。</p>
+              <span class="useCaseMeta"><b>16</b> 条产业链 · 96 个节点</span>
+              <span class="useCaseAction">查看产业链 <i>→</i></span>
+            </button>
+            <button class="useCaseCard" data-use-case="national-map" data-use-category="research" type="button">
+              <span class="useCaseTop"><i>04</i><em>区域导航</em></span>
+              <strong>全国与城市边界地图</strong>
+              <p>从 34 个省级地区下钻至市级边界；港澳设有显式快捷入口。</p>
+              <span class="useCaseMeta"><b>34</b> 省级地图 · 本地优先加载</span>
+              <span class="useCaseAction">回到全国地图 <i>→</i></span>
+            </button>
+            <button class="useCaseCard" data-use-case="region-compare" data-use-category="decision" type="button">
+              <span class="useCaseTop"><i>05</i><em>横向比较</em></span>
+              <strong>省域比较实验室</strong>
+              <p>并列比较创新、制造、数字、绿色、开放和投资观察六项研究指数。</p>
+              <span class="useCaseMeta"><b>4</b> 个地区同时比较</span>
+              <span class="useCaseAction">开始比较 <i>→</i></span>
+            </button>
+            <button class="useCaseCard" data-use-case="evidence-method" data-use-category="decision" type="button">
+              <span class="useCaseTop"><i>06</i><em>来源核验</em></span>
+              <strong>证据、口径与风险</strong>
+              <p>区分本地企业证据与省域推导，检查员工、营收、市值和产业评分口径。</p>
+              <span class="useCaseMeta"><b>365</b> 城市风险提示</span>
+              <span class="useCaseAction">查看证据口径 <i>→</i></span>
+            </button>
           </div>
         </section>
 

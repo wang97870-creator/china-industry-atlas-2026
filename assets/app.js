@@ -6,8 +6,38 @@ const provinces = DATA.provinces,
   sources = DATA.sources,
   cityStats = DATA.cityStats || {},
   cityIndustryEvidence = DATA.cityIndustryEvidence || {},
-  enterprises = DATA.enterprises || [],
-  enterpriseMeta = DATA.enterpriseMeta || {};
+  cityProfiles = globalThis.CITY_PROFILES || {},
+  cityProfileMeta = globalThis.CITY_PROFILE_META || {},
+  manualEnterprises = DATA.enterprises || [],
+  listedEnterprises = globalThis.A_SHARE_ENTERPRISES || [],
+  neeqEnterprises = globalThis.NEEQ_ENTERPRISES || [],
+  twseEnterprises = globalThis.TWSE_ENTERPRISES || [],
+  curatedEnterprises = globalThis.CURATED_CITY_ENTERPRISES || [],
+  generatedEnterpriseMeta = {
+    aShare: globalThis.A_SHARE_META || {},
+    neeq: globalThis.NEEQ_META || {},
+    twse: globalThis.TWSE_META || {},
+    curated: globalThis.CURATED_CITY_META || {},
+  },
+  enterpriseMeta = {
+    ...(DATA.enterpriseMeta || {}),
+    listedSnapshot: generatedEnterpriseMeta,
+  };
+const enterpriseKeys = new Set();
+const enterprises = [
+  ...manualEnterprises,
+  ...listedEnterprises,
+  ...neeqEnterprises,
+  ...twseEnterprises,
+  ...curatedEnterprises,
+].filter((enterprise) => {
+    const key = enterprise.ticker
+      ? `${enterprise.city}::${enterprise.ticker}`
+      : `${enterprise.city}::${enterprise.name}`;
+    if (enterpriseKeys.has(key)) return false;
+    enterpriseKeys.add(key);
+    return true;
+});
 const byName = Object.fromEntries(provinces.map((p) => [p.name, p]));
 const byMapName = Object.fromEntries(provinces.map((p) => [p.mapName, p]));
 const metrics = [
@@ -59,7 +89,7 @@ const enterpriseCities = new Set(
 document.getElementById("provinceCount").textContent = provinces.length;
 document.getElementById("enterpriseCountStat").textContent = enterprises.length;
 document.getElementById("enterpriseCityCoverage").textContent =
-  `${enterpriseCities.size} 个重点城市`;
+  `${enterpriseCities.size} 个城市全覆盖`;
 
 const mobileMedia = window.matchMedia("(max-width: 900px)");
 document.body.dataset.mobileView = "map";
@@ -114,6 +144,24 @@ function provinceSectorScore(p, sector) {
   return Math.max(25, Math.min(100, s));
 }
 function cityData(city, p) {
+  const profile = cityProfiles[city];
+  if (profile)
+    return {
+      name: city,
+      level: profile.level,
+      grade: profile.grade,
+      base: profile.mature.join("、"),
+      emerging: [...profile.emerging, ...profile.future].join("、"),
+      angle: profile.thesis,
+      text: [
+        profile.position,
+        ...profile.mature,
+        ...profile.emerging,
+        ...profile.future,
+        ...profile.leaders,
+      ].join(" "),
+      profile,
+    };
   const raw =
     cityOverrides[city] || cityOverrides[city.replace(/市$/, "")] || null;
   if (raw)
@@ -149,6 +197,14 @@ function citySectorScores(city, p) {
     .map((s, i) => {
       let score = provinceSectorScore(p, s) - 8;
       score += Math.min(18, keywordHits(c.text, s) * 7);
+      const profileRank = c.profile?.industryEvidence.findIndex(
+        (item) => item.id === s.id,
+      );
+      if (profileRank >= 0) {
+        const proof = c.profile.industryEvidence[profileRank];
+        score += Math.max(3, 18 - profileRank * 3);
+        score += Math.min(8, proof.localEnterpriseCount * 2);
+      }
       if ((provinceFocus[p.name] || []).slice(0, 3).includes(s.id)) score += 3;
       return { ...s, score: Math.max(22, Math.min(100, score)) };
     })
@@ -265,6 +321,7 @@ async function initNational() {
   setLoading(true);
   try {
     const geo = await fetchGeo([
+      "assets/maps/china.json",
       "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
       "https://cdn.jsdelivr.net/gh/zhChuXiao/ChinaGeoJson@master/china.json",
     ]);
@@ -303,8 +360,9 @@ async function drillProvince(p, cityToFocus = null) {
   try {
     const code = p.adcode;
     const geo = await fetchGeo([
+      `assets/maps/provinces/${encodeURIComponent(p.mapName)}.json`,
       `https://geo.datav.aliyun.com/areas_v3/bound/${code}_full.json`,
-      `https://cdn.jsdelivr.net/gh/zhChuXiao/ChinaGeoJson@master/province/${code}.json`,
+      `https://cdn.jsdelivr.net/gh/zhChuXiao/ChinaGeoJson@master/province/${encodeURIComponent(p.mapName)}.json`,
     ]);
     const key = "province_" + code;
     echarts.registerMap(key, geo);
@@ -639,8 +697,9 @@ function renderOverview(p) {
 }
 function cityCardHtml(c, p) {
   const top = citySectorScores(c.name, p).slice(0, 4),
-    recs = enterpriseCityCatalog(c.name, p);
-  return `<h5>${esc(c.name)}</h5><small>${c.level}</small><dl><dt>成熟产业</dt><dd>${esc(c.base)}</dd><dt>新兴与未来方向</dt><dd>${esc(c.emerging)}</dd><dt>细分产业链 Top 4</dt><dd><div class="scorePills">${top.map((s) => `<span class="scorePill">${s.label} · ${s.score}</span>`).join("")}</div></dd><dt>投资观察</dt><dd>${esc(c.angle)}</dd><dt>企业证据</dt><dd>${recs.length ? `已收录 ${recs.length} 家代表企业；其中上市/挂牌 ${recs.filter((x) => x.ticker).length} 家。` : "该城市尚未建立深度企业记录，将显示省内参考并明确标注。"}</dd></dl><button class="actionBtn" id="openEnterpriseFromCard">查看全部已收录企业 →</button>`;
+    recs = enterpriseCityCatalog(c.name, p),
+    profile = c.profile;
+  return `<h5>${esc(c.name)}</h5><small>${c.level}</small><dl><dt>成熟产业</dt><dd>${esc(c.base)}</dd><dt>新兴与未来方向</dt><dd>${esc(c.emerging)}</dd><dt>细分产业链 Top 4</dt><dd><div class="scorePills">${top.map((s) => `<span class="scorePill">${s.label} · ${s.score}</span>`).join("")}</div></dd><dt>投资观察</dt><dd>${esc(c.angle)}</dd><dt>企业证据</dt><dd>已收录 ${recs.length} 家本地代表企业；其中上市/挂牌 ${recs.filter((x) => x.ticker).length} 家。${profile?.leaders?.length ? ` 入口样本：${esc(profile.leaders.slice(0, 4).join("、"))}。` : ""}</dd>${profile?.risks?.length ? `<dt>尽调缺口</dt><dd>${profile.risks.map(esc).join("；")}</dd>` : ""}</dl><button class="actionBtn" id="openEnterpriseFromCard">查看全部已收录企业 →</button>`;
 }
 function renderChains(p) {
   const city =
@@ -707,12 +766,7 @@ function sectorLabel(id) {
   return s ? s.label : id;
 }
 function enterpriseCityCatalog(city, p) {
-  const own = enterprises.filter((x) => x.city === city);
-  if (own.length) return own;
-  return enterprises
-    .filter((x) => p.cities.includes(x.city))
-    .slice(0, 12)
-    .map((x) => ({ ...x, _fallback: true }));
+  return enterprises.filter((x) => x.city === city);
 }
 function companyByName(name) {
   return enterprises.find((x) => x.name === name);
@@ -733,14 +787,21 @@ function provinceOverviewHtml(p) {
 }
 function generatedEvidence(city, p) {
   const c = cityData(city, p),
-    tops = citySectorScores(city, p).slice(0, 5);
-  return tops.map((s) => ({
-    sector: s.id,
-    title: s.label,
-    metric: `区域产业适配度 ${s.score}/100 · ${maturityFor(p, s)}`,
-    employment: "缺少城市—产业统一就业口径，需查城市经普、园区和企业年报",
-    why: `城市成熟产业为${c.base}；新兴方向为${c.emerging}。以下企业为网页已核验代表样本，不代表行业全部企业。`,
-  }));
+    tops = citySectorScores(city, p).slice(0, 6),
+    profile = c.profile;
+  return tops.map((s) => {
+    const proof = profile?.industryEvidence.find((item) => item.id === s.id);
+    return {
+      sector: s.id,
+      title: s.label,
+      metric: `区域产业适配度 ${s.score}/100 · ${proof?.basis || maturityFor(p, s)}`,
+      employment:
+        "缺少城市—产业统一就业口径，需查城市经普、园区和企业年报",
+      why: proof?.localEnterpriseCount
+        ? `本地企业证据包括${proof.companies.join("、")}。样本用于定位产业链入口，不代表行业全部企业。`
+        : `该方向由${p.name}省域产业结构推导，尚缺城市专项统计和更多本地企业证据。`,
+    };
+  });
 }
 function renderCityFirstOverview(city, p) {
   const c = cityData(city, p),
@@ -749,6 +810,7 @@ function renderCityFirstOverview(city, p) {
     recs = enterpriseCityCatalog(city, p),
     ev = (cityIndustryEvidence[city] || generatedEvidence(city, p)).slice(0, 6),
     score = cityInvestmentScore(city, p);
+  const profile = c.profile;
   const kpis = [
     ["GDP", st.gdp || "未建立城市独立值"],
     ["最新增速", st.growth || "使用省域基线"],
@@ -756,7 +818,7 @@ function renderCityFirstOverview(city, p) {
     ["已收录企业", `${recs.filter((x) => !x._fallback).length || 0} 家`],
   ];
   document.getElementById("detailBody").innerHTML =
-    `<div class="cityFirstHero" id="cityTop"><div class="cityHeroTop"><div><h3>${esc(city)}</h3><small>${esc(p.name)} · ${esc(c.level)} · 数据更新至 ${esc(st.asOf || enterpriseMeta.asOf || "2026")}</small><p>${esc(st.position || c.angle)}</p></div><div class="cityScore"><b>${score}</b><span>城市产业适配度</span></div></div><div class="tagRow">${top.map((x, i) => `<span class="tag ${i < 2 ? "hot" : ""}">${x.label} ${x.score}</span>`).join("")}</div><div class="cityKpis">${kpis.map((x) => `<div class="cityKpi"><b>${esc(x[1])}</b><span>${esc(x[0])}</span></div>`).join("")}</div>${st.detail ? `<p class="companyDesc">${esc(st.detail)}</p>` : ""}</div><div class="citySectionNav"><button data-cityanchor="cityEvidence">产业证据</button><button data-citytab="enterprises">企业库</button><button data-citytab="chains">产业链</button><button data-cityanchor="provinceContext">省域背景</button></div><div class="cityEvidenceHead" id="cityEvidence"><h4>重点产业：数据证据与企业样本</h4><span>优先列出可核验本地企业样本；缺口明确标注</span></div><div class="industryEvidenceGrid">${ev.map((e) => industryEvidenceHtml(e, city, p)).join("")}</div><div class="cityBlock"><div class="cityBlockHead"><div><b>${esc(city)}城市画像</b><div style="font-size:8px;color:#718b9e;margin-top:3px">先看城市，省域背景置于最下方</div></div><span class="grade ${c.grade}">${c.grade}级</span></div><div class="cityCard">${cityCardHtml(c, p)}</div></div><details class="provinceContext" id="provinceContext"><summary>${esc(p.name)}省域背景 · 点击展开</summary><div class="provinceContextInner"><div class="provinceTitle"><div><h3>${p.name}</h3><small>${p.region}</small><p class="detailIntro">${esc(p.role)}</p></div><div class="scoreRing" style="--score:${p.investment * 3.6}deg"><div><b>${p.investment}</b><span>省域投资观察</span></div></div></div>${provinceOverviewHtml(p)}<button class="actionBtn" id="compareBtn">加入省域对比 →</button></div></details>`;
+    `<div class="cityFirstHero" id="cityTop"><div class="cityHeroTop"><div><h3>${esc(city)}</h3><small>${esc(p.name)} · ${esc(c.level)} · 数据更新至 ${esc(st.asOf || cityProfileMeta.asOf || enterpriseMeta.asOf || "2026")}</small><p>${esc(st.position || profile?.position || c.angle)}</p></div><div class="cityScore"><b>${score}</b><span>城市产业适配度</span></div></div><div class="tagRow">${top.map((x, i) => `<span class="tag ${i < 2 ? "hot" : ""}">${x.label} ${x.score}</span>`).join("")}</div><div class="cityKpis">${kpis.map((x) => `<div class="cityKpi"><b>${esc(x[1])}</b><span>${esc(x[0])}</span></div>`).join("")}</div>${profile ? `<div class="cityEvidenceSummary"><div><b>${profile.locallyEvidencedIndustries}</b><span>有本地企业证据的产业</span></div><div><b>${profile.localSectorCount}</b><span>企业涉及产业链</span></div><p>${esc(profile.evidenceNote)}</p></div>` : ""}${st.detail ? `<p class="companyDesc">${esc(st.detail)}</p>` : ""}</div><div class="citySectionNav"><button data-cityanchor="cityEvidence">产业证据</button><button data-citytab="enterprises">企业库</button><button data-citytab="chains">产业链</button><button data-cityanchor="provinceContext">省域背景</button></div><div class="cityEvidenceHead" id="cityEvidence"><h4>重点产业：数据证据与企业样本</h4><span>优先列出可核验本地企业样本；省域推导明确标注</span></div><div class="industryEvidenceGrid">${ev.map((e) => industryEvidenceHtml(e, city, p)).join("")}</div><div class="cityBlock"><div class="cityBlockHead"><div><b>${esc(city)}城市画像</b><div style="font-size:8px;color:#718b9e;margin-top:3px">先看城市，省域背景置于最下方</div></div><span class="grade ${c.grade}">${c.grade}级</span></div><div class="cityCard">${cityCardHtml(c, p)}</div></div><details class="provinceContext" id="provinceContext"><summary>${esc(p.name)}省域背景 · 点击展开</summary><div class="provinceContextInner"><div class="provinceTitle"><div><h3>${p.name}</h3><small>${p.region}</small><p class="detailIntro">${esc(p.role)}</p></div><div class="scoreRing" style="--score:${p.investment * 3.6}deg"><div><b>${p.investment}</b><span>省域投资观察</span></div></div></div>${provinceOverviewHtml(p)}<button class="actionBtn" id="compareBtn">加入省域对比 →</button></div></details>`;
   bindCityOverviewActions(city, p);
   if (st.source) {
     const h = document.querySelector(".cityFirstHero");
@@ -837,10 +899,9 @@ function renderEnterprises(p) {
     return;
   }
   const recs = enterpriseCityCatalog(city, p),
-    isFallback = !enterprises.some((x) => x.city === city),
     sectors = [...new Set(recs.flatMap(companySectorIds))];
   document.getElementById("detailBody").innerHTML =
-    `<div class="enterpriseIntro"><h3>${esc(city)}企业库</h3><p>${isFallback ? "当前城市尚未建立独立企业库，下方为同省代表企业参考，企业所在地已单独标注。" : "展示网页已收录的龙头、上市公司及关键非上市企业。"} ${esc(enterpriseMeta.scope || "")}</p></div><div class="enterpriseFilters"><input id="enterpriseSearch" placeholder="搜索企业、业务或代码" value="${esc(activeEnterpriseQuery)}"><select id="enterpriseSector"><option value="all">全部产业</option>${sectors.map((id) => `<option value="${id}" ${id === activeEnterpriseSector ? "selected" : ""}>${esc(sectorLabel(id))}</option>`).join("")}</select><select id="enterpriseStatus"><option value="all">全部上市状态</option><option value="listed" ${activeEnterpriseStatus === "listed" ? "selected" : ""}>上市/挂牌</option><option value="private" ${activeEnterpriseStatus === "private" ? "selected" : ""}>非上市/集团子公司</option></select></div><div class="enterpriseCount" id="enterpriseCount"></div><div class="enterpriseGrid" id="enterpriseGrid"></div><div class="coverageNote">${esc(enterpriseMeta.coverage || "")}<br>${esc(enterpriseMeta.marketNote || "")}</div>`;
+    `<div class="enterpriseIntro"><h3>${esc(city)}企业库</h3><p>${recs.length ? "展示已核验注册地的上市公司、龙头企业及关键非上市企业。" : "该城市的本地龙头企业样本仍在核验，当前不使用省内其他城市企业替代。"} ${esc(enterpriseMeta.scope || "")}</p></div><div class="enterpriseFilters"><input id="enterpriseSearch" placeholder="搜索企业、业务或代码" value="${esc(activeEnterpriseQuery)}"><select id="enterpriseSector"><option value="all">全部产业</option>${sectors.map((id) => `<option value="${id}" ${id === activeEnterpriseSector ? "selected" : ""}>${esc(sectorLabel(id))}</option>`).join("")}</select><select id="enterpriseStatus"><option value="all">全部上市状态</option><option value="listed" ${activeEnterpriseStatus === "listed" ? "selected" : ""}>上市/挂牌</option><option value="private" ${activeEnterpriseStatus === "private" ? "selected" : ""}>非上市/集团子公司</option></select></div><div class="enterpriseCount" id="enterpriseCount"></div><div class="enterpriseGrid" id="enterpriseGrid"></div><div class="coverageNote">${esc(enterpriseMeta.coverage || "")}<br>${esc(enterpriseMeta.marketNote || "")}</div>`;
   const rerender = () => {
     activeEnterpriseQuery = document
       .getElementById("enterpriseSearch")
@@ -872,10 +933,18 @@ function renderEnterprises(p) {
   rerender();
 }
 function companyCardHtml(x) {
-  const fallback = x._fallback
-    ? `<span class="dataBadge">省内参考·所在地 ${esc(x.city)}</span>`
+  const generatedBadge = x.generated
+    ? `<span class="dataBadge">${esc(
+        x.dataset === "NEEQ"
+          ? "挂牌样本 · 注册地核验"
+          : x.dataset === "TWSE"
+            ? "TWSE 样本 · 登记地核验"
+            : x.dataset === "CURATED"
+              ? "逐城核验样本"
+              : "上市样本 · 注册地核验",
+      )}</span>`
     : "";
-  return `<article class="companyCard"><div class="companyHead"><div><h4>${esc(x.name)}${fallback}</h4><small>${esc(companySectorIds(x).map(sectorLabel).join(" / "))} · ${esc(x.ownership || "所有制待核验")}</small></div><span class="companyStatus">${esc(x.status)}</span></div><div class="companyRole">${esc(x.role)}</div><div class="companyMetrics"><div class="companyMetric"><b>${esc(x.ticker || "非独立上市")}</b><span>上市代码</span></div><div class="companyMetric"><b>${x.secid ? `<span class="liveCap loading" data-secid="${x.secid}">${esc(x.valuation || "联网加载市值")}</span>` : esc(x.valuation || "未公开")}</b><span>市值 / 估值口径</span></div><div class="companyMetric"><b>${esc(x.revenue || "未录入/见最新年报")}</b><span>营业收入</span></div><div class="companyMetric"><b>${esc(x.employees || "未单独披露")}</b><span>集团员工 / 就业</span></div></div>${x.founded ? `<div class="sourceMini">成立：${esc(x.founded)} · 数据：${esc(x.asOf || "持续更新")}</div>` : ""}${x.description ? `<p class="companyDesc">${esc(x.description)}</p>` : ""}${x.latest ? `<div class="companyLatest">${esc(x.latest)}</div>` : ""}<div class="companyLinks">${x.source ? `<a href="${x.source}" target="_blank" rel="noopener">年报/官方披露 ↗</a>` : ""}${x.source2 ? `<a href="${x.source2}" target="_blank" rel="noopener">公司背景 ↗</a>` : ""}</div></article>`;
+  return `<article class="companyCard"><div class="companyHead"><div><h4>${esc(x.name)}${generatedBadge}</h4><small>${esc(companySectorIds(x).map(sectorLabel).join(" / "))} · ${esc(x.ownership || "所有制待核验")}</small></div><span class="companyStatus">${esc(x.status)}</span></div><div class="companyRole">${esc(x.role)}</div><div class="companyMetrics"><div class="companyMetric"><b>${esc(x.ticker || "非独立上市")}</b><span>上市代码</span></div><div class="companyMetric"><b>${x.secid ? `<span class="liveCap loading" data-secid="${x.secid}">${esc(x.valuation || "联网加载市值")}</span>` : esc(x.valuation || "未公开")}</b><span>市值 / 估值口径</span></div><div class="companyMetric"><b>${esc(x.revenue || "未录入/见最新年报")}</b><span>营业收入</span></div><div class="companyMetric"><b>${esc(x.employees || "未单独披露")}</b><span>集团员工 / 就业</span></div></div>${x.founded ? `<div class="sourceMini">成立：${esc(x.founded)} · 数据：${esc(x.asOf || "持续更新")}</div>` : ""}${x.rankBasis ? `<div class="sourceMini">入选口径：${esc(x.rankBasis)}</div>` : ""}${x.description ? `<p class="companyDesc">${esc(x.description)}</p>` : ""}${x.latest ? `<div class="companyLatest">${esc(x.latest)}</div>` : ""}<div class="companyLinks">${x.source ? `<a href="${x.source}" target="_blank" rel="noopener">${esc(x.sourceLabel || "年报/官方披露")} ↗</a>` : ""}${x.source2 ? `<a href="${x.source2}" target="_blank" rel="noopener">${esc(x.source2Label || "公司背景")} ↗</a>` : ""}${x.source3 ? `<a href="${x.source3}" target="_blank" rel="noopener">${esc(x.source3Label || "投资数据资料")} ↗</a>` : ""}</div></article>`;
 }
 function formatCap(v) {
   if (!v || v <= 0) return null;
@@ -942,8 +1011,12 @@ function bindCityRows(p) {
 function renderEvidence(p) {
   const city =
     focusedCity && activeCityList(p).includes(focusedCity) ? focusedCity : null;
+  const profile = city ? cityProfiles[city] : null;
+  const cityProof = profile
+    ? `<div class="evidenceBox evidenceStrong"><b>${esc(city)}逐城证据摘要</b><p>本地代表企业 ${profile.localEnterpriseCount} 家，覆盖 ${profile.localSectorCount} 条产业链；其中 ${profile.locallyEvidencedIndustries} 个重点方向有直接企业样本。${esc(profile.evidenceNote)}</p></div><div class="evidenceBox"><b>本市需继续核验</b><p>${profile.risks.map(esc).join("；")}。</p></div>`
+    : "";
   document.getElementById("detailBody").innerHTML =
-    `<div class="provinceTitle"><div><h3>证据与口径</h3><small>${city ? `${esc(city)} / ${p.name}` : p.name} · 数据可追溯性说明</small></div></div><div class="evidenceBox"><b>城市优先显示规则</b><p>选择城市后，城市经济、产业证据、企业样本和龙头公司首先展示；省域自然、人文、政策和产业结构移动至页面底部折叠区。</p></div><div class="evidenceBox"><b>企业库范围</b><p>${esc(enterpriseMeta.scope || "")} 企业营收与员工优先取最新年度报告；“员工”通常为集团合并口径，不等于该城市本地就业。未单独披露时明确显示“未披露”，不进行估算。</p></div><div class="evidenceBox"><b>估值与市值</b><p>上市企业显示交易所代码，并尝试联网加载A股实时总市值。非上市企业若缺乏可靠股权交易，不填传闻估值；历史融资估值也不等同于当前企业价值。</p></div><div class="evidenceBox"><b>A/B/C城市颗粒度</b><p>A级为城市独立产业画像；B级为省域基线叠加城市类型；C级为行政边界派生。企业库有独立的覆盖标签，与城市产业评级并不完全相同。</p></div><div class="evidenceBox"><b>产业链评分</b><p>由省级产业标签、城市独立资料、成熟/新兴/未来关键词和创新、制造、数字、绿色、开放指标共同计算，表达“区域适配度”，不是企业收益率预测。</p></div><div class="evidenceBox"><b>当前区域风险</b><p>${p.risks.map(esc).join("；")}。项目尽调还应核验能耗、土地、环保、补贴兑现、核心客户、应收账款、资本开支和真实本地就业。</p></div>`;
+    `<div class="provinceTitle"><div><h3>证据与口径</h3><small>${city ? `${esc(city)} / ${p.name}` : p.name} · 数据可追溯性说明</small></div></div>${cityProof}<div class="evidenceBox"><b>城市优先显示规则</b><p>选择城市后，城市经济、产业证据、企业样本和龙头公司首先展示；省域自然、人文、政策和产业结构移动至页面底部折叠区。</p></div><div class="evidenceBox"><b>企业库范围</b><p>${esc(enterpriseMeta.scope || "")} 企业营收与员工优先取最新年度报告；“员工”通常为集团合并口径，不等于该城市本地就业。未单独披露时明确显示“未披露”，不进行估算。</p></div><div class="evidenceBox"><b>估值与市值</b><p>上市企业显示交易所代码，并尝试联网加载A股实时总市值。非上市企业若缺乏可靠股权交易，不填传闻估值；历史融资估值也不等同于当前企业价值。</p></div><div class="evidenceBox"><b>A/B城市颗粒度</b><p>A级为城市独立资料或多企业、多产业证据画像；B级至少有一家本地企业证据，产业缺口由省域结构补充并明确标注。企业库覆盖标签与产业适配度不是投资评级。</p></div><div class="evidenceBox"><b>产业链评分</b><p>由本地企业行业归属、省级产业标签、城市资料和成熟/新兴/未来关键词共同计算，表达“区域适配度”，不是企业收益率预测。</p></div><div class="evidenceBox"><b>当前区域风险</b><p>${p.risks.map(esc).join("；")}。项目尽调还应核验能耗、土地、环保、补贴兑现、核心客户、应收账款、资本开支和真实本地就业。</p></div>`;
 }
 function renderTaxonomy() {
   document.getElementById("taxonomyGrid").innerHTML = taxonomy
@@ -1425,6 +1498,67 @@ function updateCompare() {
     true,
   );
 }
+
+async function openCityWorkflow(tab) {
+  const city = focusedCity || "南通";
+  const province = provinces.find((item) => item.cities.includes(city));
+  if (!province) return;
+  if (!provinceNavActive || selected.name !== province.name || mapLevel === "china") {
+    await drillProvince(province);
+  }
+  selectCityFocus(city, province, false);
+  activeTab = tab;
+  renderTabs();
+  renderDetail();
+  document
+    .getElementById("atlas")
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (mobileMedia.matches) setMobileView("detail");
+}
+
+function setupUseCaseHub() {
+  const count = document.getElementById("useCaseEnterpriseCount");
+  if (count) count.textContent = enterprises.length.toLocaleString("zh-CN");
+
+  document.querySelectorAll("[data-use-filter]").forEach((button) => {
+    button.onclick = () => {
+      const filter = button.dataset.useFilter;
+      document.querySelectorAll("[data-use-filter]").forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+      document.querySelectorAll("[data-use-category]").forEach((card) => {
+        card.hidden =
+          filter !== "all" && card.dataset.useCategory !== filter;
+      });
+    };
+  });
+
+  document.querySelectorAll("[data-use-case]").forEach((card) => {
+    card.onclick = async () => {
+      const useCase = card.dataset.useCase;
+      if (useCase === "national-map") {
+        await initNational();
+        document
+          .getElementById("atlas")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (useCase === "region-compare") {
+        openCompare(provinceNavActive ? selected.name : "江苏");
+        return;
+      }
+      const tabByUseCase = {
+        "city-overview": "overview",
+        "enterprise-library": "enterprises",
+        "industry-chain": "chains",
+        "evidence-method": "evidence",
+      };
+      if (tabByUseCase[useCase]) await openCityWorkflow(tabByUseCase[useCase]);
+    };
+  });
+}
 document.querySelectorAll(".tabBtn").forEach(
   (b) =>
     (b.onclick = () => {
@@ -1472,6 +1606,7 @@ mobileMedia.addEventListener("change", (event) => {
   }
 });
 renderControls();
+setupUseCaseHub();
 renderTaxonomy();
 renderSources();
 renderDetail();

@@ -5,7 +5,9 @@
   "description": "A city-first, one-page atlas for researching China's regional industries and representative enterprises.",
   "license": "PolyForm-Noncommercial-1.0.0",
   "scripts": {
-    "check": "node --check assets/data.js && node --check assets/app.js && node tests/smoke.mjs",
+    "check": "node --check assets/data.js && node --check assets/generated/a-share-enterprises.js && node --check assets/generated/neeq-enterprises.js && node --check assets/generated/twse-enterprises.js && node --check assets/generated/curated-city-enterprises.js && node --check assets/generated/city-profiles.js && node --check assets/app.js && node tests/smoke.mjs",
+    "generate:profiles": "node scripts/generate-city-profiles.mjs",
+    "import:tw-map": "node scripts/import-taiwan-map.mjs",
     "test": "npm run check",
     "serve": "python3 -m http.server 4175"
   },

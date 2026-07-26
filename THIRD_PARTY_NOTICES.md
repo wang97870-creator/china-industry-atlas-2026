@@ -5,19 +5,30 @@ This project loads, links to, or derives runtime information from third-party pr
 ## Apache ECharts
 
 - Project: [Apache ECharts](https://echarts.apache.org/)
-- Usage: interactive maps and charts, loaded from jsDelivr at runtime
+- Version: 5.5.1
+- Usage: interactive maps and charts, bundled locally so the core interface does not depend on a runtime CDN
 - License: Apache License 2.0
+- License copy: `assets/licenses/Apache-ECharts-LICENSE.txt`
 
 ## ChinaGeoJson
 
 - Project: [zhChuXiao/ChinaGeoJson](https://github.com/zhChuXiao/ChinaGeoJson)
-- Usage: administrative-boundary GeoJSON fallback loaded at runtime
+- Usage: province-level collections containing city boundaries, bundled locally; network sources are fallback only
 - License: MIT License, as stated by the upstream repository
+- License copy: `assets/licenses/ChinaGeoJson-LICENSE.txt`
 
 ## DataV GeoAtlas
 
 - Service: [DataV GeoAtlas boundary service](https://geo.datav.aliyun.com/areas_v3/bound/)
-- Usage: primary runtime source for administrative-boundary GeoJSON
+- Usage: the national province-boundary collection is bundled locally; the service remains an optional runtime fallback
+- Provenance and retrieval checksum: `assets/maps/README.md`
+
+## twgeojson
+
+- Project: [g0v/twgeojson](https://github.com/g0v/twgeojson)
+- Usage: 20 Taiwan county/city boundaries, bundled locally and normalized to the atlas city index
+- License: CC0 1.0 Universal
+- Notice: `assets/licenses/twgeojson-CC0.txt`
 
 ## Public statistics and company disclosures
 
