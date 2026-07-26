@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="一页浏览中国重点城市的产业定位、经济指标、产业链证据与代表企业。覆盖 34 个省级地区、365 个城市索引、16 条产业链与 170 条企业记录。"
+    />
+    <meta property="og:title" content="中国城市产业与龙头企业深度图谱 2026" />
+    <meta
+      property="og:description"
+      content="从省域到城市，从产业链到企业证据的一页式区域产业研究工具。"
+    />
+    <meta property="og:type" content="website" />
+    <title>中国城市产业与龙头企业深度图谱 2026</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"
+      defer
+    ></script>
+    <script src="assets/data.js" defer></script>
+    <script src="assets/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skipLink" href="#atlas">跳到研究工作台</a>
+    <div class="gridbg" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="回到页面顶部">
+        <span class="logo" aria-hidden="true">CN</span>
+        <span class="brandCopy">
+          <b>中国城市产业图谱</b>
+          <small>CHINA CITY INDUSTRY ATLAS · 2026</small>
+        </span>
+      </a>
+      <div class="topbarMeta">
+        <span class="editionPill"><i></i> City Due Diligence</span>
+        <nav class="nav" aria-label="页面导航">
+          <a href="#atlas">工作台</a>
+          <a href="#taxonomy">产业框架</a>
+          <a href="#trends">趋势</a>
+          <a href="#sources">来源</a>
+        </nav>
+        <a class="headerCta" href="#atlas">开始检索</a>
+      </div>
+    </header>
+
+    <div class="shell" id="top">
+      <main id="main">
+        <section class="hero" aria-labelledby="heroTitle">
+          <div class="heroCopy">
+            <div class="kicker">
+              <span>2026 EDITION</span>
+              <span>城市产业尽调 / CITY DUE DILIGENCE</span>
+            </div>
+            <h1 id="heroTitle">
+              看懂一座城市，先看它在
+              <span>产业链里的位置。</span>
+            </h1>
+            <p>
+              把城市定位、经济指标、产业证据、代表企业与省域背景放进同一个研究工作台。
+              先回答“这座城市靠什么增长”，再沿产业链核验“企业是谁、证据在哪里”。
+            </p>
+            <div class="heroActions">
+              <a class="primaryAction" href="#atlas"
+                >进入全国图谱 <span>→</span></a
+              >
+              <button class="secondaryAction" id="openNantong" type="button">
+                查看南通深度样板
+              </button>
+            </div>
+            <div class="heroCaveat">
+              <span>研究辅助，不构成投资建议</span>
+              <span>企业员工为集团口径时不等于本地就业</span>
+              <span>估值缺乏可靠来源则明确留空</span>
+            </div>
+          </div>
+
+          <div class="heroStats" aria-label="数据覆盖范围">
+            <article class="stat statLead">
+              <span class="statIndex">01</span>
+              <b id="provinceCount">34</b>
+              <span>省级地区</span>
+              <em>全国省界可下钻</em>
+            </article>
+            <article class="stat">
+              <span class="statIndex">02</span>
+              <b id="cityCount">365</b>
+              <span>城市 / 地区索引</span>
+              <em>城市画像优先</em>
+            </article>
+            <article class="stat">
+              <span class="statIndex">03</span>
+              <b id="enterpriseCountStat">170</b>
+              <span>代表企业记录</span>
+              <em id="enterpriseCityCoverage">29 个重点城市</em>
+            </article>
+            <article class="stat">
+              <span class="statIndex">04</span>
+              <b>16</b>
+              <span>细分产业链</span>
+              <em>96 个价值链节点</em>
+            </article>
+          </div>
+        </section>
+
+        <section class="atlasWorkspace" id="atlas" aria-labelledby="atlasTitle">
+          <div class="panel navDock">
+            <div class="workbenchHead">
+              <div>
+                <span class="sectionEyebrow">RESEARCH WORKBENCH</span>
+                <h2 id="atlasTitle">城市产业研究工作台</h2>
+              </div>
+              <div class="navTrail" aria-live="polite">
+                <button class="trailBtn current" id="homeTrail" type="button">
+                  全国
+                </button>
+                <span class="trailSep">/</span>
+                <span class="trailContext" id="navContext"
+                  >选择省份后进入市级地图</span
+                >
+              </div>
+            </div>
+
+            <div class="navTools">
+              <label class="navField">
+                <span>01 · 省份</span>
+                <select class="navSelect" id="provinceJump">
+                  <option value="">选择省份</option>
+                </select>
+              </label>
+              <label class="navField">
+                <span>02 · 城市</span>
+                <select class="navSelect" id="cityJump" disabled>
+                  <option value="">选择城市</option>
+                </select>
+              </label>
+              <label class="navField navSearchField">
+                <span>03 · 搜索企业 / 产业</span>
+                <span class="navSearchWrap">
+                  <input
+                    class="navSearch"
+                    id="globalSearch"
+                    list="atlasSuggestions"
+                    autocomplete="off"
+                    placeholder="南通 / 中天科技 / 机器人"
+                  />
+                  <button
+                    class="searchGo"
+                    id="searchGo"
+                    type="button"
+                    aria-label="搜索"
+                    title="搜索，也可按 Enter"
+                  >
+                    ↗
+                  </button>
+                </span>
+              </label>
+              <button class="navPrimary" id="jumpBtn" type="button">
+                定位区域
+              </button>
+            </div>
+            <datalist id="atlasSuggestions"></datalist>
+          </div>
+
+          <div class="mobileWorkspaceTabs" aria-label="移动端视图">
+            <button class="active" data-mobile-view="map" type="button">
+              地图与筛选
+            </button>
+            <button data-mobile-view="detail" type="button">城市详情</button>
+          </div>
+
+          <div class="workspaceGrid">
+            <div class="mapColumn">
+              <div class="panel filterBar">
+                <span class="filterBarLabel">地图指标</span>
+                <div class="segmentList" id="metricList"></div>
+                <button class="filterToggle" id="filterToggle" type="button">
+                  产业筛选
+                  <b id="activeIndustryLabel">全部产业</b>
+                  <span>⌄</span>
+                </button>
+              </div>
+
+              <div class="panel filterDrawer" id="filterDrawer">
+                <div class="drawerHeader">
+                  <div>
+                    <b>细分产业链筛选</b>
+                    <p>选择产业后，地图按区域产业链适配度重新着色。</p>
+                  </div>
+                  <button class="drawerClose" id="drawerClose" type="button">
+                    收起
+                  </button>
+                </div>
+                <div class="industryGrid" id="industryList"></div>
+                <div class="drawerFooter">
+                  <div class="legend">
+                    <div class="legendBar"></div>
+                    <div class="legendScale">
+                      <span>低</span>
+                      <span>结构性机会</span>
+                      <span>高</span>
+                    </div>
+                  </div>
+                  <div class="drawerMeta">
+                    <div class="badgeLine">
+                      <span class="badge">官方宏观</span>
+                      <span class="badge">官方政策</span>
+                      <span class="badge">研究归纳</span>
+                    </div>
+                    <div>适配度是研究指数，不代表投资收益</div>
+                  </div>
+                </div>
+              </div>
+
+              <section class="panel mapWrap" aria-label="中国区域产业地图">
+                <div class="mapToolbar">
+                  <div>
+                    <span class="chip" id="breadcrumb">
+                      <strong>全国</strong> · 省级边界
+                    </span>
+                    <button
+                      class="mapBtn"
+                      id="backBtn"
+                      type="button"
+                      style="display: none"
+                    >
+                      ← 上一级
+                    </button>
+                  </div>
+                  <div>
+                    <span class="chip statusChip" id="boundaryStatus"
+                      >省界已开启</span
+                    >
+                    <button class="mapBtn" id="resetView" type="button">
+                      重置
+                    </button>
+                    <button
+                      class="mapBtn primary"
+                      id="toggleLabels"
+                      type="button"
+                    >
+                      标签
+                    </button>
+                  </div>
+                </div>
+                <div id="chinaMap"></div>
+                <div class="mapHint">
+                  滚轮缩放 · 拖动平移 · 点击省份下钻 · 点击城市看画像
+                </div>
+                <div class="selectionDock" id="selectionDock"></div>
+                <div class="mapLoading" id="mapLoading" aria-live="polite">
+                  <div class="loader">正在载入市级边界…</div>
+                </div>
+                <div class="mapFallback" id="mapFallback">
+                  <h3>地图边界暂未载入</h3>
+                  <p>
+                    仍可通过顶部选择器和快捷入口浏览全部内容；联网后刷新可恢复地图。
+                  </p>
+                  <div class="fallbackGrid" id="fallbackGrid"></div>
+                </div>
+              </section>
+
+              <div class="panel quickPanel">
+                <div class="quickTitle">
+                  <b id="quickTitle">省份快捷入口</b>
+                  <small id="quickSubtitle">点击即可下钻</small>
+                </div>
+                <div class="quickRail" id="quickRail"></div>
+              </div>
+            </div>
+
+            <aside class="panel detail" aria-label="区域研究详情">
+              <div class="detailHeader">
+                <div>
+                  <span class="sectionEyebrow">DUE DILIGENCE BRIEF</span>
+                  <b>区域尽调简报</b>
+                </div>
+                <button
+                  class="mobileBackToMap"
+                  data-mobile-view="map"
+                  type="button"
+                >
+                  ← 返回地图
+                </button>
+              </div>
+              <div class="tabs" id="tabs" role="tablist">
+                <button
+                  class="tabBtn active"
+                  data-tab="overview"
+                  type="button"
+                  role="tab"
+                >
+                  区域画像
+                </button>
+                <button
+                  class="tabBtn"
+                  data-tab="enterprises"
+                  type="button"
+                  role="tab"
+                >
+                  企业库
+                </button>
+                <button
+                  class="tabBtn"
+                  data-tab="chains"
+                  type="button"
+                  role="tab"
+                >
+                  产业链
+                </button>
+                <button
+                  class="tabBtn"
+                  data-tab="cities"
+                  type="button"
+                  role="tab"
+                >
+                  城市矩阵
+                </button>
+                <button
+                  class="tabBtn"
+                  data-tab="evidence"
+                  type="button"
+                  role="tab"
+                >
+                  证据口径
+                </button>
+              </div>
+              <div class="detailBody" id="detailBody"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="methodStrip" aria-label="研究方法">
+          <div>
+            <span>01</span>
+            <b>定位 Position</b>
+            <p>先看城市在全国与省域产业分工中的位置。</p>
+          </div>
+          <div>
+            <span>02</span>
+            <b>证据 Evidence</b>
+            <p>再核验统计公报、经济普查、年报与官方披露。</p>
+          </div>
+          <div>
+            <span>03</span>
+            <b>缺口 Gaps</b>
+            <p>无法可靠验证的数据留空，不用传闻数字补齐。</p>
+          </div>
+        </section>
+
+        <section class="sectionWrap" id="taxonomy">
+          <div class="sectionTitle">
+            <div>
+              <span class="sectionEyebrow">VALUE CHAIN TAXONOMY</span>
+              <h2>16 条产业链分类框架</h2>
+            </div>
+            <p>
+              以未来产业六大方向为上层框架，补充先进制造、基础产业与现代服务业；
+              每条产业链拆为 6 个价值链节点。
+            </p>
+          </div>
+          <div class="taxonomyGrid" id="taxonomyGrid"></div>
+        </section>
+
+        <section class="sectionWrap" id="trends">
+          <div class="sectionTitle">
+            <div>
+              <span class="sectionEyebrow">NATIONAL SIGNALS</span>
+              <h2>全国趋势与产业风向</h2>
+            </div>
+            <p>
+              宏观数据使用国家统计局口径；未来规模为政策锚点与研究情景，
+              不是确定预测或收益承诺。
+            </p>
+          </div>
+          <div class="trendGrid">
+            <div class="panel chartCard">
+              <div class="chart" id="gdpChart"></div>
+            </div>
+            <div class="panel chartCard">
+              <div class="chart" id="sectorChart"></div>
+            </div>
+          </div>
+          <div class="trendGrid trendGridSecondary">
+            <div class="panel chartCard">
+              <div class="chart" id="futureChart"></div>
+            </div>
+            <div class="panel chartCard">
+              <div class="chart" id="signalChart"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sectionWrap" id="sources">
+          <div class="sectionTitle">
+            <div>
+              <span class="sectionEyebrow">SOURCES & METHODOLOGY</span>
+              <h2>数据来源与口径</h2>
+            </div>
+            <p>
+              优先链接国家统计局、工信部、地方统计公报与企业官方披露。
+              地理边界仅用于研究展示。
+            </p>
+          </div>
+          <div class="sources" id="sourceList"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div>
+          <b>中国城市产业与龙头企业深度图谱 2026</b>
+          <p>
+            城市产业适配度用于横向研究，不构成证券、法律、税务或项目投资建议。
+            具体决策应继续核验财务、客户、能耗、土地、环保、补贴、供应链与退出条件。
+          </p>
+        </div>
+        <div class="footerMeta">
+          <span>Source-available · Noncommercial</span>
+          <a href="LICENSE">PolyForm Noncommercial 1.0.0</a>
+          <a href="COMMERCIAL-LICENSE.md">商业授权 / Commercial License</a>
+        </div>
+      </footer>
+    </div>
+
+    <div
+      class="modal"
+      id="compareModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="compareTitle"
+    >
+      <div class="modalBox">
+        <div class="modalHead">
+          <div>
+            <b id="compareTitle">省域对比实验室</b>
+            <small>最多选择 4 个地区</small>
+          </div>
+          <button class="close" id="closeModal" type="button">关闭</button>
+        </div>
+        <div class="modalBody">
+          <div class="compareList" id="compareList"></div>
+          <div id="compareChart"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

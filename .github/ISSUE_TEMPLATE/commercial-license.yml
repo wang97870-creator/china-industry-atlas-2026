@@ -1,0 +1,50 @@
+name: Commercial license request
+description: Request a separate paid license for commercial use.
+title: "[Commercial License] "
+labels:
+  - commercial-license
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your interest. This public Issue is only for initial routing. Do not include confidential contract terms, pricing, customer lists, credentials, or personal data.
+  - type: input
+    id: organization
+    attributes:
+      label: Organization or individual
+      description: Public name only; do not post registration documents here.
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Intended commercial use
+      description: Briefly explain the product, service, internal workflow, or client engagement.
+    validations:
+      required: true
+  - type: dropdown
+    id: distribution
+    attributes:
+      label: Distribution model
+      options:
+        - Internal use only
+        - Hosted service or website
+        - Distributed software or data product
+        - Client delivery or consulting
+        - Not decided yet
+    validations:
+      required: true
+  - type: textarea
+    id: scale
+    attributes:
+      label: Expected scale and term
+      description: Approximate users, customers, deployments, and expected duration.
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I understand that opening this Issue does not grant commercial permission.
+          required: true
