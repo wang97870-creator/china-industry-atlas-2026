@@ -154,7 +154,7 @@ for (const asset of [
   "assets/app.js",
 ]) {
   assert.ok(
-    html.includes(`${asset}?v=20260726.2`),
+    html.includes(`${asset}?v=20260726.3`),
     `runtime asset must be cache-busted: ${asset}`,
   );
 }
@@ -198,6 +198,11 @@ assert.match(app, /assets\/maps\/provinces/);
 assert.match(app, /function setMobileView\(/);
 assert.match(app, /function renderNationalIntro\(/);
 assert.match(app, /function setupUseCaseHub\(/);
+assert.match(
+  app,
+  /async function drillProvince[\s\S]*?selectionDock"\)\.classList\.remove\("show"\)/,
+  "province changes must clear the previous city selection dock",
+);
 assert.match(license, /PolyForm Noncommercial License 1\.0\.0/);
 assert.match(commercial, /No commercial permission is granted/);
 

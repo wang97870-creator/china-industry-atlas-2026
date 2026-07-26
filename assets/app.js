@@ -351,6 +351,7 @@ async function drillProvince(p, cityToFocus = null) {
   selectedFeatureName = null;
   if (cityToFocus) focusedCity = cityToFocus;
   else focusedCity = null;
+  document.getElementById("selectionDock").classList.remove("show");
   activeTab = "overview";
   renderDetail();
   updateNavigator();
