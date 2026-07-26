@@ -1441,6 +1441,12 @@ document
       (button.onclick = () => setMobileView(button.dataset.mobileView, true)),
   );
 document.getElementById("openNantong").onclick = () => openFeaturedCity("南通");
+document
+  .querySelectorAll("[data-special-region]")
+  .forEach(
+    (button) =>
+      (button.onclick = () => openFeaturedCity(button.dataset.specialRegion)),
+  );
 document.getElementById("backBtn").onclick = () => initNational();
 document.getElementById("toggleLabels").onclick = () => {
   showLabels = !showLabels;

@@ -2627,10 +2627,9 @@ summary:focus-visible {
 }
 
 .navTools {
-  grid-template-columns: minmax(145px, 0.62fr) minmax(145px, 0.62fr) minmax(
-      250px,
-      1.3fr
-    ) auto;
+  grid-template-columns:
+    minmax(145px, 0.62fr) minmax(145px, 0.62fr) minmax(250px, 1.3fr)
+    auto;
   gap: 8px;
   align-items: end;
 }
@@ -2834,6 +2833,45 @@ summary:focus-visible {
 .mapHint {
   color: #79919b;
   font-size: 8px;
+}
+
+.sarDock {
+  position: absolute;
+  bottom: 48px;
+  left: 14px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid rgba(112, 228, 210, 0.2);
+  border-radius: 10px;
+  background: rgba(5, 17, 29, 0.88);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(14px);
+}
+
+.sarDock span {
+  padding: 0 3px;
+  color: #78919a;
+  font-size: 8px;
+}
+
+.sarDock button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(112, 228, 210, 0.17);
+  border-radius: 7px;
+  color: #d8f4ef;
+  background: rgba(112, 228, 210, 0.055);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sarDock button:hover {
+  border-color: rgba(112, 228, 210, 0.42);
+  background: rgba(112, 228, 210, 0.11);
 }
 
 .selectionDock {
@@ -4047,6 +4085,16 @@ summary:focus-visible {
     right: 12px;
     left: 12px;
     text-align: center;
+  }
+
+  .sarDock {
+    top: 58px;
+    bottom: auto;
+    left: 12px;
+  }
+
+  .sarDock span {
+    display: none;
   }
 
   .selectionDock {

@@ -45,6 +45,14 @@ for (const id of [
   assert.match(html, new RegExp(`id="${id}"`), `missing #${id}`);
 }
 
+for (const region of ["香港", "澳门"]) {
+  assert.match(
+    html,
+    new RegExp(`data-special-region="${region}"`),
+    `missing visible ${region} entry`,
+  );
+}
+
 assert.ok(
   html.indexOf("assets/data.js") < html.indexOf("assets/app.js"),
   "data.js must load before app.js",
