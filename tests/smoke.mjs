@@ -142,6 +142,23 @@ for (const region of ["香港", "澳门"]) {
   );
 }
 
+for (const asset of [
+  "assets/styles.css",
+  "assets/vendor/echarts-5.5.1.min.js",
+  "assets/data.js",
+  "assets/generated/a-share-enterprises.js",
+  "assets/generated/neeq-enterprises.js",
+  "assets/generated/twse-enterprises.js",
+  "assets/generated/curated-city-enterprises.js",
+  "assets/generated/city-profiles.js",
+  "assets/app.js",
+]) {
+  assert.ok(
+    html.includes(`${asset}?v=20260726.2`),
+    `runtime asset must be cache-busted: ${asset}`,
+  );
+}
+
 assert.ok(
   html.indexOf("assets/vendor/echarts-5.5.1.min.js") <
     html.indexOf("assets/app.js"),
