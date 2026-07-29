@@ -1,3 +1,32 @@
+# V2.2 decision-workspace visual QA
+
+V2.2 retains the V2.1 navy/cyan system and replaces only the three bounded mode canvases. Desktop uses a 208px step rail, flexible primary task surface, and 286px evidence inspector; below 1220px the evidence cards move after the task, and below 820px the step rail becomes horizontally scrollable. At 390px all content is single-column and the document width equals the viewport.
+
+## V2.2 captures
+
+- `docs/qa/v22/v22-investor-390x844.png`
+- `docs/qa/v22/v22-investor-768x1024.png`
+- `docs/qa/v22/v22-investor-1440x900.png`
+- `docs/qa/v22/v22-investor-1920x1080.png`
+- `docs/qa/v22/v22-investor-memo-1440x900.png`
+- `docs/qa/v22/v22-policy-pipeline-1440x900.png`
+- `docs/qa/v22/v22-learn-debrief-1440x900.png`
+
+## V2.2 differences
+
+- Investor removes the generic multi-index chart and fixed peer seeds; it prioritizes explicit research boundaries, data coverage, written thesis and a reviewable memo.
+- Policy replaces a static gap dashboard and empty stage vocabulary with task selection, evidence-labelled gaps, qualification reasons, disqualifiers and a user-maintained pipeline.
+- Learn removes decorative allocation sliders and introduces a five-step case flow with gated feedback and visible progress.
+- Repeated card nesting is reduced: the central workflow uses one primary panel, while sources and limitations remain in a separate inspector.
+
+## V2.2 trade-offs
+
+- Browser-local state is appropriate for this static preview but is not collaboration or audit-log infrastructure.
+- The first Policy iteration cannot perform defensible employment, output or capital-investment impact modelling because the required structured data is not present.
+- The Learn rubric measures process completion only; expert correctness still requires human review and better reference case data.
+
+---
+
 # V2.1 visual QA
 
 Date: 2026-07-29

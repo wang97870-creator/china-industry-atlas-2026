@@ -5,7 +5,7 @@ const localChrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrom
 
 export default defineConfig({
   testDir: "./tests",
-  testMatch: "**/v21.spec.mjs",
+  testMatch: "**/v*.spec.mjs",
   timeout: 30_000,
   expect: { timeout: 8_000 },
   fullyParallel: false,

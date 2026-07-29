@@ -57,18 +57,20 @@ test("Four work modes retain city context and expose task-specific evidence", as
   await page.goto(nantongUrl);
   await page.getByRole("tab", { name: /Investor/ }).click();
   await expect(page.locator("#v21Breadcrumb")).toContainText("江苏/南通");
-  await expect(page.locator("#v21InvestorChart canvas")).toHaveCount(1);
+  await expect(page.locator("[data-v22-workspace='investor']")).toBeVisible();
+  await expect(page.locator("#v21ModeCanvas")).toContainText("先定义要回答的问题");
+  await expect(page.locator("#v21InvestorChart")).toHaveCount(0);
   await expect(page.locator("#atlas")).toBeHidden();
 
   await page.getByRole("tab", { name: /Policy/ }).click();
-  await expect(page.locator(".v21GapNode")).toHaveCount(6);
-  await expect(page.locator("#v21ModeCanvas .v21StageRail span")).toHaveCount(9);
-  await expect(page.locator("#v21ModeCanvas")).toContainText("结构匹配企业");
-  await expect(page.locator("#v21ModeCanvas")).toContainText("不代表迁移、投资或扩产意愿");
+  await expect(page.locator("[data-v22-workspace='policy']")).toBeVisible();
+  await expect(page.locator("[data-v22-policy-task]")).toHaveCount(6);
+  await expect(page.locator("#v21ModeCanvas")).toContainText("候选企业不代表接触、投资、迁移或扩产意向");
 
   await page.getByRole("tab", { name: /Learn/ }).click();
-  await expect(page.locator("[data-v21-case]")).toHaveCount(4);
-  await expect(page.locator("[data-v21-allocation]")).toHaveCount(4);
+  await expect(page.locator("[data-v22-workspace='learn']")).toBeVisible();
+  await expect(page.locator("[data-v22-learn-case]")).toHaveCount(3);
+  await expect(page.locator("[data-v21-allocation]")).toHaveCount(0);
   await expect(page.locator("#v21Breadcrumb")).toContainText("江苏/南通");
 
   await page.goBack();

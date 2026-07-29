@@ -18,3 +18,7 @@ The baseline's second token set is authoritative. V2.1 aliases it into semantic 
 Spacing uses a 4px base: 4, 8, 12, 16, 20, 24, 32, 40. Radii: 8 control, 12 compact card, 16 panel, 20 major surface. Body is 14px/1.55, labels 11–12px, titles 18–32px. Dense table rows default to 48px and can switch to 40px compact.
 
 System states pair icon, heading, explanation, and recovery action. Skeleton motion is disabled under `prefers-reduced-motion`. Focus uses a 2px cyan outline with 2px offset.
+
+## V2.2 workflow aliases
+
+V2.2 reuses every V2.1 color, type, radius, and elevation token. New workflow components introduce no new palette values. `--v22-rail` aliases `--v21-surface-soft`; `--v22-primary` aliases `--v21-accent`; `--v22-evidence` aliases `--v21-compare`. Step states always pair color with text and a numeric marker. Form controls use a minimum 40px target, body and evidence text remain at least 11px, and mobile layouts never require horizontal page scrolling.
