@@ -18,6 +18,7 @@
     <title>中国城市产业与龙头企业深度图谱 2026</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="assets/styles.css?v=20260726.3" />
+    <link rel="stylesheet" href="assets/v21.css?v=20260729.4" />
     <script src="assets/vendor/echarts-5.5.1.min.js?v=20260726.3" defer></script>
     <script src="assets/data.js?v=20260726.3" defer></script>
     <script src="assets/generated/a-share-enterprises.js?v=20260726.3" defer></script>
@@ -25,7 +26,8 @@
     <script src="assets/generated/twse-enterprises.js?v=20260726.3" defer></script>
     <script src="assets/generated/curated-city-enterprises.js?v=20260726.3" defer></script>
     <script src="assets/generated/city-profiles.js?v=20260726.3" defer></script>
-    <script src="assets/app.js?v=20260726.3" defer></script>
+    <script src="assets/app.js?v=20260729.4" defer></script>
+    <script src="assets/v21-app.js?v=20260729.4" defer></script>
   </head>
   <body>
     <a class="skipLink" href="#atlas">跳到研究工作台</a>
@@ -39,18 +41,46 @@
           <small>CHINA CITY INDUSTRY ATLAS · 2026</small>
         </span>
       </a>
-      <div class="topbarMeta">
-        <span class="editionPill"><i></i> City Due Diligence</span>
-        <nav class="nav" aria-label="页面导航">
-          <a href="#useCases">用途</a>
-          <a href="#atlas">工作台</a>
-          <a href="#taxonomy">产业框架</a>
-          <a href="#trends">趋势</a>
-          <a href="#sources">来源</a>
+      <div class="topbarMeta v21TopbarMeta">
+        <nav class="v21ModeNav" aria-label="研究模式" role="tablist">
+          <button class="active" type="button" role="tab" aria-selected="true" data-v21-mode="explore">
+            <span>Explore</span><small>探索</small>
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-v21-mode="investor">
+            <span>Investor</span><small>投资研究</small>
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-v21-mode="policy">
+            <span>Policy</span><small>产业政策</small>
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-v21-mode="learn">
+            <span>Learn</span><small>案例学习</small>
+          </button>
         </nav>
-        <a class="headerCta" href="#atlas">开始检索</a>
+        <span class="v21Connection" id="v21Connection" data-state="online"><i></i><span>本地数据就绪</span></span>
+        <button class="v21CommandTrigger" id="v21CommandTrigger" type="button" aria-haspopup="dialog">
+          <span>搜索城市、企业、产业</span><kbd>⌘ K</kbd>
+        </button>
       </div>
     </header>
+
+    <div class="v21ContextBar" id="v21ContextBar">
+      <div class="v21ContextIdentity">
+        <nav class="v21Breadcrumb" id="v21Breadcrumb" aria-label="当前位置">
+          <span>中国</span><i>/</i><strong>全国</strong>
+        </nav>
+        <div class="v21EvidenceMeta" aria-live="polite">
+          <span class="v21Depth" id="v21Depth">D1 · 区域索引</span>
+          <span id="v21Updated">更新 2026-07-26</span>
+          <span id="v21Completeness">完整度 —</span>
+        </div>
+      </div>
+      <div class="v21ContextActions" aria-label="当前研究操作">
+        <button type="button" id="v21AddCompare">＋ 比较</button>
+        <button type="button" id="v21AddWatch">☆ 观察</button>
+        <button type="button" id="v21CopyLink">复制链接</button>
+        <button type="button" id="v21OpenSources" aria-haspopup="dialog">查看来源</button>
+      </div>
+    </div>
 
     <div class="shell" id="top">
       <main id="main">
@@ -109,6 +139,32 @@
               <em>96 个价值链节点</em>
             </article>
           </div>
+        </section>
+
+        <section class="v21PlatformIntro" id="v21PlatformIntro" aria-labelledby="v21PlatformTitle">
+          <div>
+            <span class="sectionEyebrow">CITY · INDUSTRY · ENTERPRISE INTELLIGENCE</span>
+            <h1 id="v21PlatformTitle">中国城市产业与企业情报工作台</h1>
+            <p id="v21ModeDescription">从地图或城市列表进入，把产业链位置、企业证据与来源放在同一研究上下文。</p>
+          </div>
+          <dl class="v21ScopeStrip" aria-label="平台覆盖范围">
+            <div><dt>地区</dt><dd>34</dd></div>
+            <div><dt>城市画像</dt><dd>365</dd></div>
+            <div><dt>企业记录</dt><dd>1,758</dd></div>
+            <div><dt>价值链节点</dt><dd>96</dd></div>
+          </dl>
+        </section>
+
+        <section class="v21ModeWorkbench" id="v21ModeWorkbench" aria-labelledby="v21WorkbenchTitle" hidden>
+          <header class="v21WorkbenchHeader">
+            <div>
+              <span class="sectionEyebrow" id="v21WorkbenchEyebrow">INVESTOR WORKBENCH</span>
+              <h2 id="v21WorkbenchTitle">投资研究工作台</h2>
+              <p id="v21WorkbenchLead">比较城市与企业证据，形成可继续核验的投资论点。</p>
+            </div>
+            <button type="button" id="v21ToggleContextMap" aria-expanded="false" aria-controls="atlas">展开地理背景</button>
+          </header>
+          <div class="v21ModeCanvas" id="v21ModeCanvas" aria-live="polite"></div>
         </section>
 
         <section class="useCaseHub" id="useCases" aria-labelledby="useCaseTitle">
@@ -242,6 +298,10 @@
               <div class="panel filterBar">
                 <span class="filterBarLabel">地图指标</span>
                 <div class="segmentList" id="metricList"></div>
+                <div class="v21MapViewToggle" role="group" aria-label="地理入口">
+                  <button class="active" data-v21-map-view="map" type="button" aria-pressed="true">地图</button>
+                  <button data-v21-map-view="list" type="button" aria-pressed="false">城市列表</button>
+                </div>
                 <button class="filterToggle" id="filterToggle" type="button">
                   产业筛选
                   <b id="activeIndustryLabel">全部产业</b>
@@ -331,6 +391,21 @@
                   </p>
                   <div class="fallbackGrid" id="fallbackGrid"></div>
                 </div>
+              </section>
+
+              <section class="panel v21CityListPanel" id="v21CityListPanel" aria-labelledby="v21CityListTitle" hidden>
+                <div class="v21CityListHead">
+                  <div>
+                    <span class="sectionEyebrow">MAP ALTERNATIVE</span>
+                    <h3 id="v21CityListTitle">可键盘操作的城市入口</h3>
+                    <p>与地图使用同一城市状态；无需精准点击边界。</p>
+                  </div>
+                  <label>
+                    <span class="srOnly">筛选城市</span>
+                    <input id="v21CityListSearch" type="search" placeholder="筛选城市或产业" autocomplete="off" />
+                  </label>
+                </div>
+                <div class="v21CityList" id="v21CityList"></div>
               </section>
 
               <div class="panel quickPanel">
@@ -494,6 +569,51 @@
         </div>
       </footer>
     </div>
+
+    <section class="v21CompareTray" id="v21CompareTray" aria-label="比较托盘" hidden>
+      <div>
+        <span class="sectionEyebrow">COMPARE TRAY</span>
+        <strong id="v21CompareTrayTitle">比较清单</strong>
+        <div id="v21CompareItems"></div>
+      </div>
+      <div class="v21TrayActions">
+        <button type="button" id="v21ClearCompare">清空</button>
+        <button class="primary" type="button" id="v21OpenCompare">进入比较</button>
+      </div>
+    </section>
+
+    <div class="v21Dialog" id="v21Palette" role="dialog" aria-modal="true" aria-labelledby="v21PaletteTitle" hidden>
+      <div class="v21DialogBackdrop" data-v21-close="palette"></div>
+      <div class="v21PalettePanel">
+        <header>
+          <div>
+            <span class="sectionEyebrow">COMMAND PALETTE</span>
+            <h2 id="v21PaletteTitle">在 365 座城市与 1,758 家企业中检索</h2>
+          </div>
+          <button type="button" data-v21-close="palette" aria-label="关闭搜索">Esc</button>
+        </header>
+        <label class="v21PaletteSearch">
+          <span class="srOnly">全局搜索</span>
+          <input id="v21PaletteInput" type="search" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="v21PaletteResults" aria-activedescendant="" autocomplete="off" placeholder="输入省份、城市、企业、代码、产业链节点…" />
+          <kbd>↑↓ 选择 · Enter 打开</kbd>
+        </label>
+        <div class="v21PaletteResults" id="v21PaletteResults" role="listbox" aria-label="搜索结果"></div>
+        <footer><span>支持 / 或 Ctrl/Cmd + K</span><span>结果按类型分组</span></footer>
+      </div>
+    </div>
+
+    <div class="v21Dialog" id="v21SourceDrawer" role="dialog" aria-modal="true" aria-labelledby="v21SourceTitle" hidden>
+      <div class="v21DialogBackdrop" data-v21-close="sources"></div>
+      <aside class="v21SourcePanel">
+        <header>
+          <div><span class="sectionEyebrow">EVIDENCE DRAWER</span><h2 id="v21SourceTitle">当前上下文的数据来源</h2></div>
+          <button type="button" data-v21-close="sources" aria-label="关闭来源">关闭</button>
+        </header>
+        <div id="v21SourceContent"></div>
+      </aside>
+    </div>
+
+    <div class="v21Toast" id="v21Toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <div
       class="modal"
