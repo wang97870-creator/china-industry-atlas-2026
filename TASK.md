@@ -1,34 +1,28 @@
-# Task: V2.1 platform preview
+# Task: V2.2 decision workspaces preview
 
 ## Worktree boundary
 
-- Baseline: `08087d8bb781952284482d6ae3126281085cb416`
-- Branch: `codex/v21-platform-preview`
-- Worktree: `work/atlas-v21-platform-preview`
+- Baseline: `76b782a7cd14d763e794f5a3f479da4f663a8a1a`
+- Branch: `codex/v22-decision-workspaces`
+- Worktree: `work/atlas-v22-decision-workspaces`
 - Delivery: local preview and evidence pack only
-- Forbidden in this task: merge, push, PR, GitHub Pages deployment, production deployment
+- Forbidden: merge, push, PR, GitHub Pages deployment, production deployment
 
-## Outcome
+## Product problem
 
-Upgrade the atlas incrementally into one city-industry intelligence platform with four retained-context work modes:
-
-- Explore: map, city, industry, and enterprise discovery
-- Investor: city/company comparison, thesis, risk, and watchlist
-- Policy: chain gaps, attraction candidates, project-stage vocabulary, and policy execution evidence
-- Learn: evidence-led cases, metric explanations, bull/bear practice, and a simulated portfolio workflow
+Investor, Policy, and Learn currently render different dashboards but do not carry a user from a task definition to a defensible output. V2.2 must replace those bounded workbench surfaces with guided, persistent decision workflows while preserving the V2.1 shell, Explore experience, data, maps, licenses, and rollback path.
 
 ## Required preview scope
 
-1. Persistent mode navigation and city context bar.
-2. Shareable URL state and an accessible command palette.
-3. Explore split workspace with map/list equivalent entry points and a pinned city card.
-4. City research sequence: Summary, KPIs, Overview, Industry Chains, Companies, Capital & Projects, Production Factors, Policy & Risks, Province Context, Sources.
-5. Desktop professional enterprise table with filters/sort/column visibility/export/detail; mobile cards.
-6. City and enterprise compare trays, watchlist, evidence depth, confidence, and completeness.
-7. Investor, Policy, and Learn workbenches that reuse the same current city and enterprise data.
-8. Loading, Empty, Error, Low-confidence, and Offline presentations.
-9. Keyboard, reduced-motion, responsive, console, data-count, and visual QA evidence.
+1. Investor: research setup, user-built peer set, evidence-led thesis, risk/invalidation fields, and downloadable investment memo. Remove fixed peer seeds and false-precision score emphasis.
+2. Policy: task selection, evidence-labelled chain-gap diagnosis, qualified structural candidates, landing checklist, local project pipeline, and downloadable attraction brief.
+3. Learn: three polished cases using Observe, Diagnose, Decide, Defend, and Debrief; require a learner decision before feedback and persist progress locally.
+4. Shared: step navigation, primary next action, evidence inspector, honest missing-data states, local persistence, responsive one-column mobile flow, keyboard access, and source access.
+5. Retain all V2.1 and baseline data/legal/map quality gates.
 
 ## Acceptance
 
-All checks in `docs/QUALITY_GATES.md` pass. Create `HANDOFF.md`, start a localhost preview, and wait for the owner to say `OK` before any integration or deployment work.
+- Each mode produces a concrete artifact or completed case rather than ending at a dashboard.
+- No fixed default peer group, relocation intent, project fact, valuation, or learning correctness is invented.
+- New browser tests cover the three end-to-end workflows and four required viewports.
+- Create V2.2 screenshots and update `HANDOFF.md`; start localhost and wait for owner approval.

@@ -35,3 +35,16 @@
 - [x] Core keyboard, city entry, mode switch, table, map/list, and URL flows tested.
 - [x] Browser console has no unexpected errors.
 - [x] `HANDOFF.md` records results, visual differences, known issues, rollback, and next task.
+
+## V2.2 decision-workspace gates
+
+- [x] Investor starts with a user-defined research brief and contains no fixed default peer cities.
+- [x] Investor supports a user-built peer set, selected evidence, thesis, risk, invalidation and Markdown memo export.
+- [x] Policy distinguishes strong, weak and missing evidence and states that missing text evidence is not proof of a real industrial gap.
+- [x] Policy candidates include qualification reasons and explicit non-intent language; the pipeline is browser-local and user-maintained.
+- [x] Learn requires evidence, diagnosis, decision, counter-evidence and invalidation before Debrief.
+- [x] Learn feedback is labelled process-completeness feedback, not a unique answer or professional certification.
+- [x] V2.2 state uses `atlas.v22.*` and does not mutate source datasets.
+- [x] All three workflows export or save a concrete completion artifact.
+- [x] 390x844, 768x1024, 1440x900 and 1920x1080 have no page-level overflow.
+- [x] V2.1 regression suite and V2.2 workflow suite pass together with no unexpected console errors.

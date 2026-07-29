@@ -34,3 +34,23 @@ Desktop Explore: sticky shell → context bar → 58% map/list + 42% research �
 Desktop task mode: sticky shell → context bar → full-width workbench → optional collapsed geographic context → compare tray.
 
 Mobile: sticky compact shell → horizontally scrollable modes/context → Map/Research single-surface switch → one-column research cards → bottom compare tray.
+
+## V2.2 bounded decision-workspace migration
+
+V2.2 leaves Explore and the V2.1 context shell intact. It replaces only `#v21ModeCanvas` for the three decision modes through an additive controller loaded after V2.1.
+
+| Mode | Task start | Guided steps | Completion artifact |
+| --- | --- | --- | --- |
+| Investor | Choose subject city, industry, horizon, objective | Setup → Peer set → Thesis → Memo | Markdown investment research memo |
+| Policy | Choose city, chain, and action type | Task → Gap diagnosis → Candidates → Pipeline | Markdown attraction brief and local pipeline |
+| Learn | Choose case and learning objective | Observe → Diagnose → Decide → Defend → Debrief | Saved attempt, rubric, and case memo |
+
+Desktop uses a three-column task shell: step rail, primary workspace, and evidence/data-readiness inspector. At narrow widths, the rail becomes horizontally scrollable and the inspector follows the primary workspace. State is namespaced under `atlas.v22.*`; source datasets remain immutable.
+
+### V2.2 data contracts
+
+- Investor analysis: `subjectCity`, `industry`, `horizon`, `objective`, `peerCities`, `selectedEvidence`, `thesis`, `catalysts`, `risks`, `invalidation`, `openQuestions`, `updatedAt`.
+- Policy task: `city`, `industry`, `taskType`, `selectedGap`, `shortlist`, `pipeline[{company, stage, owner, nextAction, due}]`, `updatedAt`.
+- Learn attempt: `caseId`, `step`, `selectedEvidence`, `diagnosis`, `decision`, `counterEvidence`, `invalidation`, `confidence`, `completedAt`.
+
+These are browser-local working records, not verified investment, relocation, project, or learning-outcome facts.
