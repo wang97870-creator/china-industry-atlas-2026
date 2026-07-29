@@ -151,11 +151,17 @@ for (const asset of [
   "assets/generated/twse-enterprises.js",
   "assets/generated/curated-city-enterprises.js",
   "assets/generated/city-profiles.js",
-  "assets/app.js",
 ]) {
   assert.ok(
     html.includes(`${asset}?v=20260726.3`),
     `runtime asset must be cache-busted: ${asset}`,
+  );
+}
+
+for (const asset of ["assets/app.js", "assets/v21.css", "assets/v21-app.js"]) {
+  assert.ok(
+    html.includes(`${asset}?v=20260729.4`),
+    `V2.1 runtime asset must be cache-busted: ${asset}`,
   );
 }
 

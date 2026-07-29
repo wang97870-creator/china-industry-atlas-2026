@@ -433,7 +433,7 @@ function renderMap() {
             label: {
               show: showLabels,
               color: "rgba(225,248,255,.82)",
-              fontSize: 8,
+              fontSize: 11,
               textBorderColor: "rgba(3,10,20,.75)",
               textBorderWidth: 2,
             },
@@ -519,7 +519,7 @@ function renderMap() {
             label: {
               show: showLabels,
               color: "rgba(232,251,255,.94)",
-              fontSize: 9,
+              fontSize: 11,
               textBorderColor: "rgba(3,10,20,.78)",
               textBorderWidth: 2,
             },
@@ -578,7 +578,7 @@ function tooltipConfig() {
     backgroundColor: "rgba(4,14,29,.97)",
     borderColor: "rgba(99,232,255,.4)",
     padding: [11, 13],
-    textStyle: { color: "#eaffff", fontSize: 10 },
+    textStyle: { color: "#eaffff", fontSize: 11 },
     extraCssText:
       "max-width:360px;white-space:normal;overflow:visible;line-height:1.62;border-radius:12px;box-shadow:0 20px 48px rgba(0,0,0,.45);z-index:99999;",
     formatter: (x) => {
